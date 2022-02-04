@@ -11,31 +11,12 @@
 [![License](https://img.shields.io/badge/License-AGPL-blue)](https://github.com/hackertyus/CegaMariaSoft/blob/main/LICENSE)
 
 
-## Features
+## Özellikleri
 
-- [x] Admin Commands
-- [x] Broadcast
-- [x] Index
-- [x] Inline Search
-- [x] Random pics
-- [x] ids and User info 
-- [x] Stats, Users, Ban, Unban
-
-## Variables
-
-### Required Variables
-* `BOT_TOKEN`: Create a bot using [@BotFather](https://telegram.dog/BotFather), and get the Telegram API token.
-* `API_ID`: Get this value from [telegram.org](https://my.telegram.org/apps)
-* `API_HASH`: Get this value from [telegram.org](https://my.telegram.org/apps)
-* `CHANNELS`: Username or ID of channel or group. Separate multiple IDs by space
-* `ADMINS`: Username or ID of Admin. Separate multiple Admins by space
-* `DATABASE_URI`: [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
-* `DATABASE_NAME`: Name of the database in [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
-* `LOG_CHANNEL` : A channel to log the activities of bot. Make sure bot is an admin in the channel.
-### Optional Variables
-* `PICS`: Telegraph links of images to show in start message.( Multiple images can be used seperated by space )
-* Check [info.py](https://github.com/EvamariaTG/evamaria/blob/master/info.py) for more
-
+- [x] Yönetici Komutları
+- [x] Yayın
+- [x] İndeks
+- [x] Satır İçi Arama
 
 ## Deploy
 Bu botu her yerde dağıtabilirsiniz.
@@ -64,19 +45,18 @@ python3 bot.py
 
 ## Commands
 ```
-• /log - to get the rescent errors
-• /stats - to get status of files in db.
-* /deleteall - delete all index(autofilter)
-* /sil - delete a specific file from index.
-* /info - get user info
-* /id - get tg ids.
-• /users - to get list of my users and ids.
-• /chats - to get list of the my chats and ids 
-• /index  - to add files from a channel
-• /ban  - to ban a user.
-• /unban  - to unban a user.
-• /channel - to get list of total connected channels
-• /broadcast - to broadcast a message to all Eva Maria users
+• /log - hatalarını almak için
+• /stats - db'deki dosyaların durumunu almak için.
+* /deleteall - tüm dizini sil (otomatik filtre)
+* /sil - dizinden belirli bir dosyayı silin.
+* /info - kullanıcı bilgilerini al
+* /id - tg kimliklerini alın
+• /users - kullanıcıların kimlik listesini almak için.
+• /index  - bir kanaldan dosya eklemek için
+• /ban  - bir kullanıcıyı yasaklamak için.
+• /unban  - bir kullanıcının yasağını kaldırmak için.
+• /channel - bağlı kanalların listesini almak için
+• /broadcast - tüm Ceva Maria kullanıcılarına mesaj yayınlamak için
 ```
 
 ## Credits 
