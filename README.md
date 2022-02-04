@@ -57,6 +57,7 @@ python3 bot.py
 • /unban  - bir kullanıcının yasağını kaldırmak için.
 • /channel - bağlı kanalların listesini almak için
 • /broadcast - tüm Cega Maria kullanıcılarına mesaj yayınlamak için
+• /ayarlar - kullanıcıların mesaj bildirimlerini ayarlaması için
 ```
 
 ## Credits 
