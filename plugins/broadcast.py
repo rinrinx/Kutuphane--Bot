@@ -41,7 +41,7 @@ async def broadcast(bot, message):
     await sts.edit(f"Yayın Tamamlandı:\n{time_taken} saniye içinde tamamlandı.\n\nToplam Kullanıcılar {total_users}\nTamamlanan: {done} / {total_users}\nBasarılı: {success}\nEngellemis: {blocked}\nSilmis: {deleted}")
 
 
-@Client.on_message(filters.command("ayarlar") & filters.user(ADMINS))
+@Client.on_message(filters.command("ayarlar") & filters.private)
 async def opensettings(bot, message):
     user_id = message.from_user.id
     await message.reply_text(
