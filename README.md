@@ -56,7 +56,7 @@ python3 bot.py
 • /ban  - bir kullanıcıyı yasaklamak için.
 • /unban  - bir kullanıcının yasağını kaldırmak için.
 • /channel - bağlı kanalların listesini almak için
-• /broadcast - tüm Ceva Maria kullanıcılarına mesaj yayınlamak için
+• /broadcast - tüm Cega Maria kullanıcılarına mesaj yayınlamak için
 ```
 
 ## Credits 
