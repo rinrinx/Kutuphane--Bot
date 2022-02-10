@@ -10,7 +10,8 @@ import asyncio
         
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def broadcast(bot, message):
-    users = await db.get_all_notif_user()
+    users = await db.get_all_users()
+    #users = await db.get_all_notif_user()
     b_msg = message.reply_to_message
     sts = await message.reply_text(
         text='Mesajı yayınlıyorum...'
