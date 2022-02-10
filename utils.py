@@ -49,7 +49,12 @@ async def is_subscribed(bot, query):
 
     return False
 
-async def broadcast_messages(user_id, message):
+async def broadcast_messages(bot, user_id, message):
+    try: user = await bot.get_chat_member(AUTH_CHANNEL, user_id)
+    except UserNotParticipant: return False, "Blocked"
+    except Exception as e: logger.exception(e)
+    else:
+        if user.status == 'banned': return False, "Blocked"
     try:
         if BROADCAST_AS_COPY is False:
             await message.forward(chat_id=user_id)
