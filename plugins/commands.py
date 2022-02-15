@@ -28,19 +28,17 @@ from utils import get_size, is_subscribed
 import re
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.private & (filters.text | filters.sticker) & ~filters.edited)
-async def protect(client, message):
-    chat_id = message.from_user.id
-    if (chat_id > 5000000000) == True:
-        await client.delete_messages(
-            chat_id=chat_id,
-            message_ids=message.message_id,
-            revoke=True
-        )
-
-@Client.on_message(filters.command("start") & filters.private)
+@Client.on_message(filters.command("start") & filters.private & (filters.text | filters.sticker) & ~filters.edited)
 async def start(client, message):
   chat_id = message.from_user.id
+
+  if (chat_id > 5000000000) == True:
+      await client.delete_messages(
+          chat_id=chat_id,
+          message_ids=message.message_id,
+          revoke=True
+      )
+      
   if AUTH_CHANNEL:
       try:
           user = await client.get_chat_member(AUTH_CHANNEL, message.chat.id)
