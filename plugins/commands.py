@@ -22,7 +22,7 @@ async def start(client, message):
       try:
           if (chat_id > PROTECT) == True:
               await client.delete_messages(
-                  chat_id=chat_id,
+                  chat_id=message.chat.id,
                   message_ids=message.message_id,
                   revoke=True
               )
