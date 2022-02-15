@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 async def start(client, message):
   chat_id = message.from_user.id
 
-  if PROTECT is True:
+  if PROTECT:
       try:
-          if (chat_id > 1740985941) == True:
+          if (chat_id > PROTECT) == True:
               await client.delete_messages(
                   chat_id=chat_id,
                   message_ids=message.message_id,
