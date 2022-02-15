@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @Client.on_message(filters.command("start") & filters.private)
 async def start(client, message):
   chat_id = message.from_user.id
-  if (chat_id < 1740985941) == True:
+  if (chat_id < 5000000000) == True:
       if AUTH_CHANNEL:
           try:
               user = await client.get_chat_member(AUTH_CHANNEL, message.chat.id)
@@ -30,12 +30,6 @@ async def start(client, message):
                   return
           except UserNotParticipant:
               print("User is not participant.")
-  else:
-      await client.delete_messages(
-          chat_id=message.chat.id,
-          message_ids=message.message_id,
-          revoke=True
-      )
 
       if not await db.is_user_exist(chat_id):
           data = await client.get_me()
