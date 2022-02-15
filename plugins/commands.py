@@ -13,106 +13,108 @@ from utils import get_size, is_subscribed
 import re
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.command("start") & filters.private)
+
+@Client.on_message(filters.command("start") & filters.private & (filters.text | filters.sticker) & ~filters.edited)
 async def start(client, message):
-  if (message.from_user.id < 5000000000) == True:
-    if AUTH_CHANNEL:
-        try:
-            user = await client.get_chat_member(AUTH_CHANNEL, message.chat.id)
-            if user.status == "banned":
-                await client.delete_messages(
-                    chat_id=message.chat.id,
-                    message_ids=message.message_id,
-                    revoke=True
-                )
-                return
-        except UserNotParticipant:
-            print("User is not participant.")
+  chat_id = message.from_user.id
+  if (chat_id < 5000000000) == True:
+      if AUTH_CHANNEL:
+          try:
+              user = await client.get_chat_member(AUTH_CHANNEL, message.chat.id)
+              if user.status == "banned":
+                  await client.delete_messages(
+                      chat_id=message.chat.id,
+                      message_ids=message.message_id,
+                      revoke=True
+                  )
+                  return
+          except UserNotParticipant:
+              print("User is not participant.")
 
-    if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)
-        await client.send_message(LOG_CHANNEL,
-                                  text=script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+      if not await db.is_user_exist(chat_id):
+          data = await client.get_me()
+          BOT_USERNAME = data.username
+          await db.add_user(chat_id, message.from_user.first_name)
+          if LOG_CHANNEL:
+              await client.send_message(LOG_CHANNEL,
+                                        text=script.LOG_TEXT_P.format(chat_id, message.from_user.mention, BOT_USERNAME))
+          else:
+              logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {chat_id}")
 
-    if len(message.command) != 2:
-        buttons = [
-            [
-                InlineKeyboardButton('Ara 🔍', switch_inline_query_current_chat=''),
-                InlineKeyboardButton('Bot Nasıl Kullanılır?', url='https://t.me/anagrupp/7402')
-            ],
-            [
-                InlineKeyboardButton('Bot Destek', url=f"https://t.me/mmagneto"),
-            ]
-            ]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await client.send_photo(
-            chat_id=message.from_user.id,
-            photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention),
-            reply_markup=reply_markup,
-            parse_mode='html',
-            protect_content=True
-        )
-        return
-    if AUTH_CHANNEL and not await is_subscribed(client, message):
-        try:
-            date = message.date + 120
-            invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL), expire_date=date, creates_join_request=True)
-        except ChatAdminRequired:
-            logger.error("Bot'un Forcesub kanalında yönetici olduğundan emin olun.")
-            return
-        btn = [
-            [
-                InlineKeyboardButton(
-                    "🤖 Kanala Katılın", url=invite_link.invite_link
-                )
-            ]
-        ]
-        if message.command[1] != "subscribe":
-            btn.append([InlineKeyboardButton(" 🔄 Tekrar deneyin", callback_data=f"checksub#{message.command[1]}")])
-        await client.send_message(
-            chat_id=message.from_user.id,
-            text="**Botu sadece kanal aboneleri kullanabilir.**",
-            reply_markup=InlineKeyboardMarkup(btn),
-            parse_mode="markdown",
-            protect_content=True
-            )
-        return
-    if len(message.command) ==2 and message.command[1] in ["subscribe", "error", "okay", "help", "start"]:
-        buttons = [[
-            InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
-        ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await client.send_photo(
-            chat_id=message.from_user.id,
-            photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention),
-            reply_markup=reply_markup,
-            parse_mode='html',
-            protect_content=True
-        )
-        return
-    file_id = message.command[1]
-    files_ = await get_file_details(file_id)
-    if not files_:
-        return await message.reply('Böyle bir dosya yok.')
-    files = files_[0]
-    title = files.file_name
-    size=get_size(files.file_size)
-    f_caption=files.caption
-    if CUSTOM_FILE_CAPTION:
-        try:
-            f_caption=CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
-        except Exception as e:
-            logger.exception(e)
-            f_caption=f_caption
-    if f_caption is None:
-        f_caption = f"{files.file_name}"
-    await client.send_cached_media(
-        chat_id=message.from_user.id,
-        file_id=file_id,
-        caption=f_caption,
-        )
+      if len(message.command) != 2:
+          buttons = [[
+              InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
+          ]]
+          reply_markup = InlineKeyboardMarkup(buttons)
+          await client.send_photo(
+              chat_id=chat_id,
+              photo=random.choice(PICS),
+              caption=script.START_TXT.format(message.from_user.mention),
+              reply_markup=reply_markup,
+              parse_mode='html',
+              protect_content=True
+          )
+          return
+      if AUTH_CHANNEL and not await is_subscribed(client, message):
+          try:
+              date = message.date + 120
+              invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL), expire_date=date, member_limit=1)
+          except ChatAdminRequired:
+              logger.error("Bot'un Forcesub kanalında yönetici olduğundan emin olun.")
+              return
+          btn = [
+              [
+                  InlineKeyboardButton(
+                      "🤖 Kanala Katılın", url=invite_link.invite_link
+                  )
+              ]
+          ]
+          if message.command[1] != "subscribe":
+              btn.append([InlineKeyboardButton(" 🔄 Tekrar deneyin", callback_data=f"checksub#{message.command[1]}")])
+          await client.send_message(
+              chat_id=chat_id,
+              text="**Botu sadece kanal aboneleri kullanabilir.**",
+              reply_markup=InlineKeyboardMarkup(btn),
+              parse_mode="markdown",
+              protect_content=True
+          )
+          return
+      if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help", "start"]:
+          buttons = [[
+              InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
+          ]]
+          reply_markup = InlineKeyboardMarkup(buttons)
+          await client.send_photo(
+              chat_id=chat_id,
+              photo=random.choice(PICS),
+              caption=script.START_TXT.format(message.from_user.mention),
+              reply_markup=reply_markup,
+              parse_mode='html',
+              protect_content=True
+          )
+          return
+      file_id = message.command[1]
+      files_ = await get_file_details(file_id)
+      if not files_:
+          return await message.reply('Böyle bir dosya yok.')
+      files = files_[0]
+      title = files.file_name
+      size = get_size(files.file_size)
+      f_caption = files.caption
+      if CUSTOM_FILE_CAPTION:
+          try:
+              f_caption = CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
+          except Exception as e:
+              logger.exception(e)
+              f_caption = f_caption
+      if f_caption is None:
+          f_caption = f"{files.file_name}"
+      await client.send_cached_media(
+          chat_id=chat_id,
+          file_id=file_id,
+          caption=f_caption,
+          protect_content=True,
+      )
                     
 
 @Client.on_message(filters.command('kanal') & filters.user(ADMINS))
