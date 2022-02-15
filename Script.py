@@ -8,4 +8,5 @@ class script(object):
     LOG_TEXT_P = """#YeniKullanici
 ID - <code>{}</code>
 Ad - {}
+{}
 """
