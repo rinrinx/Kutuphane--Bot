@@ -8,37 +8,27 @@ from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, UserNo
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, SUPPORT_CHAT
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, SUPPORT_CHAT, PROTECT
 from utils import get_size, is_subscribed
 import re
 logger = logging.getLogger(__name__)
 
-import os
-import logging
-import random
-import asyncio
-from Script import script
-from pyrogram import Client, filters
-from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, UserNotParticipant
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
-from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, SUPPORT_CHAT
-from utils import get_size, is_subscribed
-import re
-logger = logging.getLogger(__name__)
 
 @Client.on_message(filters.command("start") & filters.private & (filters.text | filters.sticker) & ~filters.edited)
 async def start(client, message):
   chat_id = message.from_user.id
 
-  if (chat_id > 5000000000) == True:
-      await client.delete_messages(
-          chat_id=chat_id,
-          message_ids=message.message_id,
-          revoke=True
-      )
-      
+  if PROTECT:
+      try:
+          if (chat_id > 5000000000) == True:
+              await client.delete_messages(
+                  chat_id=chat_id,
+                  message_ids=message.message_id,
+                  revoke=True
+              )
+      except Exception as e:
+          print(f"Error: {e}")
+
   if AUTH_CHANNEL:
       try:
           user = await client.get_chat_member(AUTH_CHANNEL, message.chat.id)
