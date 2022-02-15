@@ -42,8 +42,8 @@ log_channel = environ.get('LOG_CHANNEL')
 LOG_CHANNEL = int(log_channel) if log_channel else None
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'TeamEvamaria')
 CUSTOM_FILE_CAPTION = environ.get("CUSTOM_FILE_CAPTION", None)
-BROADCAST_AS_COPY = bool(environ.get("BROADCAST_AS_COPY", True)
-PROTECT = bool(environ.get("PROTECT", True)
+BROADCAST_AS_COPY = bool(environ.get("BROADCAST_AS_COPY", True))
+PROTECT = bool(environ.get("PROTECT", True))
 
 # Heroku
 HEROKU_APP_NAME = environ.get('HEROKU_APP_NAME', None)
