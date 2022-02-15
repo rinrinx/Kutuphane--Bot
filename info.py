@@ -43,6 +43,7 @@ LOG_CHANNEL = int(log_channel) if log_channel else None
 SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'TeamEvamaria')
 CUSTOM_FILE_CAPTION = environ.get("CUSTOM_FILE_CAPTION", None)
 BROADCAST_AS_COPY = bool(environ.get("BROADCAST_AS_COPY", True))
+PROTECT = bool(environ.get("PROTECT", True))
 
 # Heroku
 HEROKU_APP_NAME = environ.get('HEROKU_APP_NAME', None)
@@ -51,4 +52,5 @@ HEROKU_API_KEY = environ.get('HEROKU_API_KEY', None)
 LOG_STR = "Mevcut Özelleştirilmiş Konfigürasyonlar:-\n"
 LOG_STR += (f"CUSTOM_FILE_CAPTION etkinleştirildi {CUSTOM_FILE_CAPTION}, Dosyalarınız bu özelleştirilmiş başlıkla birlikte gönderilecek.\n" if CUSTOM_FILE_CAPTION else "CUSTOM_FILE_CAPTION bulunamadı, dosyanın varsayılan altyazıları kullanılacak.\n")
 LOG_STR += (f"BROADCAST_AS_COPY etkinleştirildi {BROADCAST_AS_COPY}, Bot yayınları etiketsiz olarak yayınlanacak.\n" if BROADCAST_AS_COPY else "BROADCAST_AS_COPY bulunamadı. Yayınlarınız etiketli olarak gönderilecek.\n")
+LOG_STR += (f"PROTECT etkinleştirildi {PROTECT}, Telegramın yeni kullanıcıları bottan atılacak.\n" if PROTECT else "PROTECT bulunamadı.\n")
 LOG_STR += (f"LOG_CHANNEL etkinleştirildi {LOG_CHANNEL}, Yeni kullanıcılar botu başlattığında bildirim alacaksınız.\n" if LOG_CHANNEL else "LOG_CHANNEL bulunamadı. Yeni kullanıcıları göremeyeceksiniz.\n")
