@@ -53,7 +53,7 @@
         },
         "LOG_CHANNEL": {
             "description": "Bot Günlükleri, -100xxxxxxx ile başlayan bir kanal kimliği yazın.",
-            "required": true
+            "required": false
         },
         "SUPPORT_CHAT": {
             "description": "Bir Destek Grubunun Kullanıcı Adı / ADMIN. ( Should be username without @ and not ID)",
