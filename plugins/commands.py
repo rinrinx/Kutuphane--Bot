@@ -19,10 +19,10 @@ async def start(client, message):
   if (chat_id < 5000000000) == True:
     if AUTH_CHANNEL:
         try:
-            user = await client.get_chat_member(AUTH_CHANNEL, chat_id)
+            user = await client.get_chat_member(AUTH_CHANNEL, message.chat.id)
             if user.status == "banned":
                 await client.delete_messages(
-                    chat_id=chat_id,
+                    chat_id=message.chat.id,
                     message_ids=message.message_id,
                     revoke=True
                 )
