@@ -20,7 +20,6 @@ async def ban_reply(bot, message):
 
 @Client.on_message(filters.group & filters.incoming)
 async def grp_bd(bot, message):
-    reply_markup=InlineKeyboardMarkup(buttons)
     k = await message.reply(
         text=f"**Ben gruplara kapalıyım dostum.**",
         parse_mode='markdown',
