@@ -33,7 +33,7 @@ async def answer(bot, query):
         file_type = None
 
     offset = int(query.offset or 0)
-    reply_markup = get_reply_markup(query=text)
+    reply_markup = get_reply_markup(bot.username, query=string)
     files, next_offset, total = await get_search_results(text,
                                                   file_type=file_type,
                                                   max_results=10,
@@ -89,15 +89,15 @@ async def answer(bot, query):
                            switch_pm_text=switch_pm_text,
                            switch_pm_parameter="okay")
 
-
-def get_reply_markup(query):
+def get_reply_markup(username, query):
+    url = 't.me/share/url?url=' + quote(SHARE_BUTTON_TEXT.format(username=username))
     buttons = [
         [
-            InlineKeyboardButton('Tekrar Ara', switch_inline_query_current_chat=query)
+            InlineKeyboardButton('Tekrar Ara', switch_inline_query_current_chat=query),
+            InlineKeyboardButton('Botu Paylaş', url=url),
         ]
         ]
     return InlineKeyboardMarkup(buttons)
-
 
 @Client.on_callback_query()
 async def cb_handler(client: Client, cb: CallbackQuery):
