@@ -2,13 +2,12 @@ import os
 import logging
 import random
 import asyncio
-from Script import script
 from pyrogram import Client, filters
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, UserNotParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, START_TXT
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, START_TXT, LOG_TEXT_P
 from utils import get_size, is_subscribed
 import re
 logger = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ async def start(client, message):
           await db.add_user(chat_id, message.from_user.first_name)
           if LOG_CHANNEL:
               await client.send_message(LOG_CHANNEL,
-                                        text=script.LOG_TEXT_P.format(chat_id, message.from_user.mention, BOT_USERNAME))
+                                        text=LOG_TEXT_P.format(chat_id, message.from_user.mention, BOT_USERNAME))
           else:
               logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {chat_id}")
 
@@ -49,7 +48,7 @@ async def start(client, message):
           await client.send_photo(
               chat_id=chat_id,
               photo=random.choice(PICS),
-              caption=script.START_TXT.format(message.from_user.mention),
+              caption=START_TXT.format(message.from_user.mention),
               reply_markup=reply_markup,
               parse_mode='html',
               protect_content=True
