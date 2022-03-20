@@ -9,7 +9,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, SUPPORT_CHAT
-from utils import get_size, is_subscribed
+from utils import get_size, is_subscribed, unpack_new_file_id
 import re
 logger = logging.getLogger(__name__)
 
@@ -161,12 +161,12 @@ async def log_file(bot, message):
 async def delete(bot, message):
     """Delete file from database"""
     reply = message.reply_to_message
-    if reply and reply.media:
-        msg = await message.reply("İşleniyor...⏳", quote=True)
-    else:
+    if not (reply and reply.media):
         await message.reply('Silmek istediğiniz dosyayı /sil ile yanıtlayın', quote=True)
         return
-
+      
+    msg = await message.reply("Processing...⏳", quote=True)
+    
     for file_type in ("document", "video", "audio"):
         media = getattr(reply, file_type, None)
         if media is not None:
@@ -194,11 +194,9 @@ async def delete(bot, message):
         else:
             # files indexed before https://github.com/EvamariaTG/EvaMaria/commit/f3d2a1bcb155faf44178e5d7a685a1b533e714bf#diff-86b613edf1748372103e94cacff3b578b36b698ef9c16817bb98fe9ef22fb669R39 
             # have original file name.
-            result = await Media.collection.delete_one({
-                'file_name': media.file_name,
-                'file_size': media.file_size,
-                'mime_type': media.mime_type
-            })
+            file_id = unpack_new_file_id(media.file_id)[0]
+            result = await Media.collection.delete_one({'file_id': file_id})
+            
             if result.deleted_count:
                 await msg.edit('Dosya veritabanından başarıyla silindi.')
             else:
