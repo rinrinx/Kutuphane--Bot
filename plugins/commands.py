@@ -9,7 +9,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, SUPPORT_CHAT
-from utils import get_size, is_subscribed, unpack_new_file_id
+from utils import get_size, is_subscribed
 import re
 logger = logging.getLogger(__name__)
 
