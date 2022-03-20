@@ -42,9 +42,27 @@ default_start_msg = """
 **Hi, {},**
 Here you can search files in inline mode. Just press following buttons and start searching.
 """
-START_TXT = environ.get('START_TXT', default_start_msg)
-SHARE_BUTTON_TEXT = 'Checkout {username} for searching files'
+default_share_button_msg = """
+Checkout {username} for searching files
+"""
+default_status_msg = """
+★ Toplam dosya: <code>{}</code>
+★ Topladım kullanıcı: <code>{}</code>
+★ Kullanılmış depolama: <code>{}</code> 𝙼𝚒𝙱
+★ Ücretsiz depolama: <code>{}</code> 𝙼𝚒𝙱
+"""
+default_log_msg = """
+#YeniKullanıcı
+ID - <code>{}</code>
+Ad - {}
+Bot - @{}
+"""
 
+START_TXT = environ.get('START_TXT', default_start_msg)
+SHARE_BUTTON_TEXT = environ.get('SHARE_BUTTON_TEXT', default_share_button_msg)
+STATUS_TXT = environ.get('STATUS_TXT', default_status_msg)
+LOG_TEXT_P = environ.get('LOG_TEXT_P', default_log_msg)
+    
 # Others
 log_channel = environ.get('LOG_CHANNEL')
 LOG_CHANNEL = int(log_channel) if log_channel else None
