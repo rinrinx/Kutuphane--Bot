@@ -37,6 +37,14 @@ DATABASE_URI = environ.get('DATABASE_URI', "")
 DATABASE_NAME = environ.get('DATABASE_NAME', "dzflm")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Telegram_files')
 
+# Messages
+default_start_msg = """
+**Hi, {},**
+Here you can search files in inline mode. Just press following buttons and start searching.
+"""
+START_TXT = environ.get('START_TXT', default_start_msg)
+SHARE_BUTTON_TEXT = 'Checkout {username} for searching files'
+
 # Others
 log_channel = environ.get('LOG_CHANNEL')
 LOG_CHANNEL = int(log_channel) if log_channel else None
