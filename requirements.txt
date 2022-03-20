@@ -1,4 +1,4 @@
-git+https://github.com/hackertyus/pyrogram
+git+git://github.com/hackertyus/pyrogram
 tgcrypto
 pymongo[srv]==3.12.3
 motor==2.5.1
