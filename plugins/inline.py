@@ -34,7 +34,7 @@ async def answer(bot, query):
 
     offset = int(query.offset or 0)
     reply_markup = get_reply_markup(query=text)
-    files, next_offset, total = await get_search_results(string,
+    files, next_offset, total = await get_search_results(text,
                                                   file_type=file_type,
                                                   max_results=5,
                                                   offset=offset)
@@ -62,7 +62,7 @@ async def answer(bot, query):
     if results:
         switch_pm_text = f"{emoji.FILE_FOLDER} Sonuçlar - {total}"
         if text:
-            switch_pm_text += f' "{string}"'
+            switch_pm_text += f' "{text}"'
         try:
             await query.answer(results=results,
                            is_personal = True,
