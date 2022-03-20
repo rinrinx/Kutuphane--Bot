@@ -25,18 +25,18 @@ async def answer(bot, query):
 
     results = []
     if '|' in query.query:
-        string, file_type = query.query.split('|', maxsplit=1)
-        string = string.strip()
+        text, file_type = query.query.split('|', maxsplit=1)
+        text = text.strip()
         file_type = file_type.strip().lower()
     else:
-        string = query.query.strip()
+        text = query.query.strip()
         file_type = None
 
     offset = int(query.offset or 0)
-    reply_markup = get_reply_markup(query=string)
+    reply_markup = get_reply_markup(query=text)
     files, next_offset, total = await get_search_results(string,
                                                   file_type=file_type,
-                                                  max_results=10,
+                                                  max_results=5,
                                                   offset=offset)
 
     for file in files:
@@ -61,7 +61,7 @@ async def answer(bot, query):
 
     if results:
         switch_pm_text = f"{emoji.FILE_FOLDER} Sonuçlar - {total}"
-        if string:
+        if text:
             switch_pm_text += f' "{string}"'
         try:
             await query.answer(results=results,
@@ -80,8 +80,8 @@ async def answer(bot, query):
                            switch_pm_parameter="error")
     else:
         switch_pm_text = f'{emoji.CROSS_MARK} Sonuç yok'
-        if string:
-            switch_pm_text += f' "{string}"'
+        if text:
+            switch_pm_text += f' "{text}"'
 
         await query.answer(results=[],
                            is_personal = True,
