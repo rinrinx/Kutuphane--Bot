@@ -9,116 +9,76 @@ from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, START_TXT, LOG_TEXT_P
 from utils import get_size, is_subscribed
+from functions.forcesub import handle_force_subscribe
 import re
+
 logger = logging.getLogger(__name__)
 
 
 @Client.on_message(filters.command("start") & filters.private)
 async def start(client, message):
-  chat_id = message.from_user.id
-  if (chat_id < 5000000000) == True:
-      if AUTH_CHANNEL:
-          try:
-              user = await client.get_chat_member(AUTH_CHANNEL, message.chat.id)
-              if user.status == "banned":
-                  await client.delete_messages(
-                      chat_id=message.chat.id,
-                      message_ids=message.message_id,
-                      revoke=True
-                  )
-                  return
-          except UserNotParticipant:
-              print("User is not participant.")
+    chat_id = message.from_user.id
+    if (chat_id < 5000000000) == True:
+        if AUTH_CHANNEL:
+            fsub = await handle_force_subscribe(client, message)
+            if fsub == 400:
+                return
 
-      if not await db.is_user_exist(chat_id):
-          data = await client.get_me()
-          BOT_USERNAME = data.username
-          await db.add_user(chat_id, message.from_user.first_name)
-          if LOG_CHANNEL:
-              await client.send_message(LOG_CHANNEL,
-                                        text=LOG_TEXT_P.format(chat_id, message.from_user.mention, BOT_USERNAME))
-          else:
-              logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {chat_id}")
+        if len(message.command) != 2:
+            buttons = [[
+                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
+            ]]
+            reply_markup = InlineKeyboardMarkup(buttons)
+            await client.send_photo(
+                chat_id=chat_id,
+                photo=random.choice(PICS),
+                caption=START_TXT.format(message.from_user.mention),
+                reply_markup=reply_markup,
+                parse_mode='html',
+                protect_content=True
+            )
+            return
 
-      if len(message.command) != 2:
-          buttons = [[
-              InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
-          ]]
-          reply_markup = InlineKeyboardMarkup(buttons)
-          await client.send_photo(
-              chat_id=chat_id,
-              photo=random.choice(PICS),
-              caption=START_TXT.format(message.from_user.mention),
-              reply_markup=reply_markup,
-              parse_mode='html',
-              protect_content=True
-          )
-          return
-      if AUTH_CHANNEL and not await is_subscribed(client, message):
-          try:
-              date = message.date + 120
-              invite_link = await client.create_chat_invite_link(int(AUTH_CHANNEL), expire_date=date, member_limit=1)
-          except ChatAdminRequired:
-              logger.error("Bot'un Forcesub kanalında yönetici olduğundan emin olun.")
-              return
-          btn = [
-              [
-                  InlineKeyboardButton(
-                      "🤖 Kanala Katılın", url=invite_link.invite_link
-                  )
-              ]
-          ]
-          if message.command[1] != "subscribe":
-              btn.append([InlineKeyboardButton(" 🔄 Tekrar deneyin", callback_data=f"checksub#{message.command[1]}")])
-          await client.send_message(
-              chat_id=chat_id,
-              text="**Botu sadece kanal aboneleri kullanabilir.**",
-              reply_markup=InlineKeyboardMarkup(btn),
-              parse_mode="markdown",
-              protect_content=True
-          )
-          return
-      if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help", "start"]:
-          buttons = [[
-              InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
-          ]]
-          reply_markup = InlineKeyboardMarkup(buttons)
-          await client.send_photo(
-              chat_id=chat_id,
-              photo=random.choice(PICS),
-              caption=START_TXT.format(message.from_user.mention),
-              reply_markup=reply_markup,
-              parse_mode='html',
-              protect_content=True
-          )
-          return
-      file_id = message.command[1]
-      files_ = await get_file_details(file_id)
-      if not files_:
-          return await message.reply('Böyle bir dosya yok.')
-      files = files_[0]
-      title = files.file_name
-      size = get_size(files.file_size)
-      f_caption = files.caption
-      if CUSTOM_FILE_CAPTION:
-          try:
-              f_caption = CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
-          except Exception as e:
-              logger.exception(e)
-              f_caption = f_caption
-      if f_caption is None:
-          f_caption = f"{files.file_name}"
-      await client.send_cached_media(
-          chat_id=chat_id,
-          file_id=file_id,
-          caption=f_caption,
-          protect_content=True,
-      )
-                    
+        if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help", "start"]:
+            buttons = [[
+                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
+            ]]
+            reply_markup = InlineKeyboardMarkup(buttons)
+            await client.send_photo(
+                chat_id=chat_id,
+                photo=random.choice(PICS),
+                caption=START_TXT.format(message.from_user.mention),
+                reply_markup=reply_markup,
+                parse_mode='html',
+                protect_content=True
+            )
+            return
+        file_id = message.command[1]
+        files_ = await get_file_details(file_id)
+        if not files_:
+            return await message.reply('Böyle bir dosya yok.')
+        files = files_[0]
+        title = files.file_name
+        size = get_size(files.file_size)
+        f_caption = files.caption
+        if CUSTOM_FILE_CAPTION:
+            try:
+                f_caption = CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
+            except Exception as e:
+                logger.exception(e)
+                f_caption = f_caption
+        if f_caption is None:
+            f_caption = f"{files.file_name}"
+        await client.send_cached_media(
+            chat_id=chat_id,
+            file_id=file_id,
+            caption=f_caption,
+            protect_content=True,
+        )
+
 
 @Client.on_message(filters.command('kanal') & filters.user(ADMINS))
 async def channel_info(bot, message):
-           
     """Send basic information of channel"""
     if isinstance(CHANNELS, (int, str)):
         channels = [CHANNELS]
@@ -163,9 +123,9 @@ async def delete(bot, message):
     if not (reply and reply.media):
         await message.reply('Silmek istediğiniz dosyayı /sil ile yanıtlayın', quote=True)
         return
-      
+
     msg = await message.reply("Processing...⏳", quote=True)
-    
+
     for file_type in ("document", "video", "audio"):
         media = getattr(reply, file_type, None)
         if media is not None:
@@ -173,7 +133,7 @@ async def delete(bot, message):
     else:
         await msg.edit('Bu desteklenen bir dosya biçimi değil.')
         return
-    
+
     file_id, file_ref = unpack_new_file_id(media.file_id)
 
     result = await Media.collection.delete_one({
@@ -187,7 +147,7 @@ async def delete(bot, message):
             'file_name': file_name,
             'file_size': media.file_size,
             'mime_type': media.mime_type
-            })
+        })
         if result.deleted_count:
             await msg.edit('Dosya veritabanından başarıyla silindi.')
         else:
@@ -197,7 +157,7 @@ async def delete(bot, message):
                 'file_name': media.file_name,
                 'file_size': media.file_size,
                 'mime_type': media.mime_type
-            })       
+            })
             if result.deleted_count:
                 await msg.edit('Dosya veritabanından başarıyla silindi.')
             else:
@@ -225,10 +185,31 @@ async def delete_all_index(bot, message):
         quote=True,
     )
 
+@Client.on_message(filters.command("ayarlar") & filters.private)
+async def opensettings(client, message):
+    user_id = message.from_user.id
+    if (user_id < 5000000000) == True:
+        if AUTH_CHANNEL:
+            fsub = await handle_force_subscribe(client, message)
+            if fsub == 400:
+                return
+        await message.reply_text(
+            f"`Bildirimleri Buradan Ayarlayabilirsiniz:`\n\nBildirimler: **{'Açık 🔔' if ((await db.get_notif(user_id)) is True) else 'Kapalı 🔕'}**",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            f"{'🔔' if ((await db.get_notif(user_id)) is True) else '🔕'}",
+                            callback_data="notifon",
+                        )
+                    ],
+                    [InlineKeyboardButton("✖ İptal", callback_data="closeMeh")],
+                ]
+            )
+        )
 
 @Client.on_callback_query(filters.regex(r'^autofilter_delete'))
 async def delete_all_index_confirm(bot, message):
     await Media.collection.drop()
     await message.answer()
     await message.message.edit('İndekslenen tüm dosyalar başarıyla silindi.')
-
