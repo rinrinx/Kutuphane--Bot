@@ -57,9 +57,14 @@ ID - <code>{}</code>
 Ad - {}
 Bot - @{}
 """
+default_forcesub_msg = """
+**Botu sadece kanal aboneleri kullanabilir.**
+"""
 
 START_TXT = environ.get('START_TXT', default_start_msg)
+FORCE_TXT = environ.get('FORCE_TXT', default_forcesub_msg)
 SHARE_BUTTON_TEXT = environ.get('SHARE_BUTTON_TEXT', default_share_button_msg)
+BUTTON_TEXT = "🤖 Kanala Katılın"
 STATUS_TXT = environ.get('STATUS_TXT', default_status_msg)
 LOG_TEXT_P = environ.get('LOG_TEXT_P', default_log_msg)
     
