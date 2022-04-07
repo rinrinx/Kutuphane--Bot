@@ -36,8 +36,7 @@ async def start(client, message):
 
         if len(message.command) != 2:
             buttons = [[
-                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat=''),
-                InlineKeyboardButton('⚙ Ayarlar', callback_data='notifon')
+                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
             ]]
             reply_markup = InlineKeyboardMarkup(buttons)
             await client.send_photo(
@@ -52,8 +51,7 @@ async def start(client, message):
 
         if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help", "start"]:
             buttons = [[
-                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat=''),
-                InlineKeyboardButton('⚙ Ayarlar', callback_data='notifon')
+                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
             ]]
             reply_markup = InlineKeyboardMarkup(buttons)
             await client.send_photo(
