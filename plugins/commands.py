@@ -24,6 +24,16 @@ async def start(client, message):
             if fsub == 400:
                 return
 
+        if not await db.is_user_exist(chat_id):
+            data = await client.get_me()
+            BOT_USERNAME = data.username
+            await db.add_user(chat_id, message.from_user.first_name)
+            if LOG_CHANNEL:
+                await client.send_message(LOG_CHANNEL,
+                                       text=LOG_TEXT_P.format(chat_id, message.from_user.mention, BOT_USERNAME))
+            else:
+                logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {chat_id}")
+
         if len(message.command) != 2:
             buttons = [[
                 InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
@@ -193,6 +203,16 @@ async def opensettings(client, message):
             fsub = await handle_force_subscribe(client, message)
             if fsub == 400:
                 return
+        if not await db.is_user_exist(user_id):
+            data = await client.get_me()
+            BOT_USERNAME = data.username
+            await db.add_user(user_id, message.from_user.first_name)
+            if LOG_CHANNEL:
+                await client.send_message(LOG_CHANNEL,
+                                       text=LOG_TEXT_P.format(user_id, message.from_user.mention, BOT_USERNAME))
+            else:
+                logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {user_id}")
+
         await message.reply_text(
             f"`Bildirimleri Buradan Ayarlayabilirsiniz:`\n\nBildirimler: **{'Açık 🔔' if ((await db.get_notif(user_id)) is True) else 'Kapalı 🔕'}**",
             reply_markup=InlineKeyboardMarkup(
