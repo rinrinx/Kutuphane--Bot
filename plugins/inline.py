@@ -105,30 +105,14 @@ async def cb_handler(client: Client, cb: CallbackQuery):
     user_id = cb.from_user.id
     if cb.data == "notifon":
         notif = await db.get_notif(cb.from_user.id)
-        if notif is True:
-            await db.set_notif(user_id, notif=False)
+        if notif:
+            await cb.answer("Bot bildirimleri kapatıldı.")
+            await db.set_notif(user_id, False)
         else:
-            await db.set_notif(user_id, notif=True)
-        await cb.message.edit(
-            f"`Bildirimleri Buradan Ayarlayabilirsiniz:`\n\nBildirimler: **{'Açık 🔔' if ((await db.get_notif(user_id)) is True) else 'Kapalı 🔕'}**",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            f"{'🔔' if ((await db.get_notif(user_id)) is True) else '🔕'}",
-                            callback_data="notifon",
-                        )
-                    ],
-                    [InlineKeyboardButton("✖ İptal", callback_data="closeMeh")],
-                ]
-            ),
-        )
-        await cb.answer(
-            f"Bildirimler: {'Açık 🔔' if ((await db.get_notif(user_id)) is True) else 'Kapalı 🔕'}"
-        )
+            await cb.answer("Bot bildirimleri etkinleştirildi.")
+            await db.set_notif(user_id, True)
     else:
         await cb.message.delete(True)
-
 
 
 
