@@ -1,13 +1,13 @@
-
-from pyrogram import Client, filters
-import datetime
 import time
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import datetime
+import logging
+from pyrogram import Client, filters
 from database.users_chats_db import db
 from info import ADMINS
 from utils import broadcast_messages
 import asyncio
-        
+logger = logging.getLogger(__name__)
+
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
 async def broadcast(bot, message):
     #users = await db.get_all_users()
@@ -21,7 +21,7 @@ async def broadcast(bot, message):
     done = 0
     blocked = 0
     deleted = 0
-    failed =0
+    failed = 0
     success = 0
     async for user in users:
         pti, sh = await broadcast_messages(bot, int(user['id']), b_msg)
@@ -40,22 +40,3 @@ async def broadcast(bot, message):
             await sts.edit(f"Yayın devam ediyor:\n\nToplam Kullanıcılar {total_users}\nTamamlanan: {done} / {total_users}\nBasarılı: {success}\nEngellemis: {blocked}\nSilmis: {deleted}")
     time_taken = datetime.timedelta(seconds=int(time.time()-start_time))
     await sts.edit(f"Yayın Tamamlandı:\n{time_taken} saniye içinde tamamlandı.\n\nToplam Kullanıcılar {total_users}\nTamamlanan: {done} / {total_users}\nBasarılı: {success}\nEngellemis: {blocked}\nSilmis: {deleted}")
-
-
-@Client.on_message(filters.command("ayarlar") & filters.private)
-async def opensettings(bot, message):
-    user_id = message.from_user.id
-    await message.reply_text(
-        f"`Bildirimleri Buradan Ayarlayabilirsiniz:`\n\nBildirimler: **{'Açık 🔔' if ((await db.get_notif(user_id)) is True) else 'Kapalı 🔕'}**",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        f"{'🔔' if ((await db.get_notif(user_id)) is True) else '🔕'}",
-                        callback_data="notifon",
-                    )
-                ],
-                [InlineKeyboardButton("✖ İptal", callback_data="closeMeh")],
-            ]
-        ),
-    )
