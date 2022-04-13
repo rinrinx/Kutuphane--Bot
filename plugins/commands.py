@@ -17,74 +17,73 @@ logger = logging.getLogger(__name__)
 
 @Client.on_message(filters.command("start") & filters.private)
 async def start(client, message):
-    chat_id = message.from_user.id
-    if (chat_id < 5000000000) == True:
-        if AUTH_CHANNEL:
-            fsub = await handle_force_subscribe(client, message)
-            if fsub == 400:
-                return
+	chat_id = message.from_user.id
+	if AUTH_CHANNEL:
+		fsub = await handle_force_subscribe(client, message)
+		if fsub == 400:
+			return
 
-        if not await db.is_user_exist(chat_id):
-            data = await client.get_me()
-            BOT_USERNAME = data.username
-            await db.add_user(chat_id, message.from_user.first_name)
-            if LOG_CHANNEL:
-                await client.send_message(LOG_CHANNEL,
-                                       text=LOG_TEXT_P.format(chat_id, message.from_user.mention, BOT_USERNAME))
-            else:
-                logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {chat_id}")
+	if not await db.is_user_exist(chat_id):
+		data = await client.get_me()
+		BOT_USERNAME = data.username
+		await db.add_user(chat_id, message.from_user.first_name)
+		if LOG_CHANNEL:
+			await client.send_message(LOG_CHANNEL,
+									  text=LOG_TEXT_P.format(chat_id, message.from_user.mention, BOT_USERNAME))
+		else:
+			logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {chat_id}")
 
-        if len(message.command) != 2:
-            buttons = [[
-                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
-            ]]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            await client.send_photo(
-                chat_id=chat_id,
-                photo=random.choice(PICS),
-                caption=START_TXT.format(message.from_user.mention),
-                reply_markup=reply_markup,
-                parse_mode='html',
-                protect_content=True
-            )
-            return
+	if len(message.command) != 2:
+		buttons = [[
+			InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
+		]]
+		reply_markup = InlineKeyboardMarkup(buttons)
+		await client.send_photo(
+			chat_id=chat_id,
+			photo=random.choice(PICS),
+			caption=START_TXT.format(message.from_user.mention),
+			reply_markup=reply_markup,
+			parse_mode='html',
+			protect_content=True
+		)
+		return
 
-        if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help", "start"]:
-            buttons = [[
-                InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
-            ]]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            await client.send_photo(
-                chat_id=chat_id,
-                photo=random.choice(PICS),
-                caption=START_TXT.format(message.from_user.mention),
-                reply_markup=reply_markup,
-                parse_mode='html',
-                protect_content=True
-            )
-            return
-        file_id = message.command[1]
-        files_ = await get_file_details(file_id)
-        if not files_:
-            return await message.reply('Böyle bir dosya yok.')
-        files = files_[0]
-        title = files.file_name
-        size = get_size(files.file_size)
-        f_caption = files.caption
-        if CUSTOM_FILE_CAPTION:
-            try:
-                f_caption = CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
-            except Exception as e:
-                logger.exception(e)
-                f_caption = f_caption
-        if f_caption is None:
-            f_caption = f"{files.file_name}"
-        await client.send_cached_media(
-            chat_id=chat_id,
-            file_id=file_id,
-            caption=f_caption,
-            protect_content=True,
-        )
+	if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help", "start"]:
+		buttons = [[
+			InlineKeyboardButton('🔍 Ara', switch_inline_query_current_chat='')
+		]]
+		reply_markup = InlineKeyboardMarkup(buttons)
+		await client.send_photo(
+			chat_id=chat_id,
+			photo=random.choice(PICS),
+			caption=START_TXT.format(message.from_user.mention),
+			reply_markup=reply_markup,
+			parse_mode='html',
+			protect_content=True
+		)
+		return
+	file_id = message.command[1]
+	files_ = await get_file_details(file_id)
+	if not files_:
+		return await message.reply('Böyle bir dosya yok.')
+	files = files_[0]
+	title = files.file_name
+	size = get_size(files.file_size)
+	f_caption = files.caption
+	if CUSTOM_FILE_CAPTION:
+		try:
+			f_caption = CUSTOM_FILE_CAPTION.format(file_name=title, file_size=size, file_caption=f_caption)
+		except Exception as e:
+			logger.exception(e)
+			f_caption = f_caption
+	if f_caption is None:
+		f_caption = f"{files.file_name}"
+	await client.send_cached_media(
+		chat_id=chat_id,
+		file_id=file_id,
+		caption=f_caption,
+		protect_content=True,
+	)
 
 
 @Client.on_message(filters.command('kanal') & filters.user(ADMINS))
@@ -161,7 +160,7 @@ async def delete(bot, message):
         if result.deleted_count:
             await msg.edit('Dosya veritabanından başarıyla silindi.')
         else:
-            # files indexed before https://github.com/EvamariaTG/EvaMaria/commit/f3d2a1bcb155faf44178e5d7a685a1b533e714bf#diff-86b613edf1748372103e94cacff3b578b36b698ef9c16817bb98fe9ef22fb669R39 
+            # files indexed before https://github.com/EvamariaTG/EvaMaria/commit/f3d2a1bcb155faf44178e5d7a685a1b533e714bf#diff-86b613edf1748372103e94cacff3b578b36b698ef9c16817bb98fe9ef22fb669R39
             # have original file name.
             result = await Media.collection.delete_one({
                 'file_name': media.file_name,
@@ -195,6 +194,7 @@ async def delete_all_index(bot, message):
         quote=True,
     )
 
+
 @Client.on_message(filters.command("ayarlar") & filters.private)
 async def opensettings(client, message):
     user_id = message.from_user.id
@@ -209,7 +209,7 @@ async def opensettings(client, message):
             await db.add_user(user_id, message.from_user.first_name)
             if LOG_CHANNEL:
                 await client.send_message(LOG_CHANNEL,
-                                       text=LOG_TEXT_P.format(user_id, message.from_user.mention, BOT_USERNAME))
+                                          text=LOG_TEXT_P.format(user_id, message.from_user.mention, BOT_USERNAME))
             else:
                 logging.info(f"#YeniKullanıcı :- Ad : {message.from_user.first_name} ID : {user_id}")
 
@@ -227,6 +227,7 @@ async def opensettings(client, message):
                 ]
             )
         )
+
 
 @Client.on_callback_query(filters.regex(r'^autofilter_delete'))
 async def delete_all_index_confirm(bot, message):
