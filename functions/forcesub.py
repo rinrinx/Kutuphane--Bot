@@ -10,7 +10,7 @@ async def handle_force_subscribe(bot, message):
         date = message.date + 120
         invite_link = await bot.create_chat_invite_link(AUTH_CHANNEL, expire_date=date, member_limit=1)
     except ChatAdminRequired:
-        logger.error("Bot'un Forcesub kanalında yönetici olduğundan emin olun.")
+        logger.error("Bot'un Kanalında yönetici olduğundan emin olun.")
         return 400
     except FloodWait as e:
         await asyncio.sleep(e.x)
